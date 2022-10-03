@@ -20,7 +20,24 @@ KEYPOINT_DICT = {
     'left_ankle': 15,
     'right_ankle': 16
 }
+
+def run_movenet(image) -> dict:
+    """Run MoveNet model on a single image.
+
+    Args:
+        image: A numpy array with shape [height, width, 3].
+
+    Returns:
+        A dictionary containing:
+            - A numpy array with shape [1, 1, 17, 3] representing the keypoints
+              and their scores.
+    """
+    model = hub.load('https://tfhub.dev/google/movenet/singlepose/lightning/4')
+    input_image = tf.expand_dims(image, axis=0)
+    outputs = model.signatures['serving_default'](input_image)
+    keypoints_with_scores = outputs['output_0']
+    return keypoints_with_scores
+
 input_size = 192
-module = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
-image_path = r"C:\Users\norch\Downloads\pexels-photo-4384679.jpeg"
+image_path = 'data/images/pose.jpg'
 image = tf.image.decode_jpeg(tf.io.read_file(image_path))
