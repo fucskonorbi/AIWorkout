@@ -4,13 +4,13 @@ import wandb
 from firebase_admin import credentials
 from firebase_admin import ml
 
-from config import Config
-from models import create_model1
-from train.data.image_data import ImageDataset
+from utils.config import Config
+from utils.image_data import ImageDataset
+from utils.models import create_model1
 
 if __name__ == "__main__":
     # load config from config.py
-    config = Config(wandb_save=False, firebase_save=True)
+    config = Config(wandb_save=False, firebase_save=False)
 
     if config.wandb_save:
         # Initialize wandb

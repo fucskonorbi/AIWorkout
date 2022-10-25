@@ -1,0 +1,16 @@
+stages:
+  train:
+    cmd: python .\train\main.py
+    deps:
+    - train
+    - train\data
+    params:
+    - train\params.yaml:
+    outs:
+    - experiments\models
+    metrics:
+    - experiments\metrics.json:
+        cache: false
+    plots:
+    - experiments\plots\:
+        cache: false
