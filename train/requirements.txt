@@ -4,3 +4,5 @@ numpy
 matplotlib
 tqdm
 scikit-learn
+wandb
+firebase-admin

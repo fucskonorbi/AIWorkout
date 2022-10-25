@@ -1,0 +1,5 @@
+outs:
+- md5: 48d8590b60b67d24a90828f30dabac0a.dir
+  size: 181499409
+  nfiles: 63
+  path: image_dataset
