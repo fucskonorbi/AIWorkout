@@ -31,7 +31,7 @@ if __name__ == "__main__":
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
     tflite_model = converter.convert()
-    with open('pose_classifier.tflite', 'wb') as f:
+    with open('../tmp/artifacts/pose_classifier.tflite', 'wb') as f:
         f.write(tflite_model)
 
     if config.firebase_save:
@@ -42,7 +42,7 @@ if __name__ == "__main__":
                 'storageBucket': 'aiworkout-22b29.appspot.com',
             })
         # Upload the model to Firebase
-        model = ml.TFLiteGCSModelSource.from_tflite_model_file('pose_classifier.tflite')
+        model = ml.TFLiteGCSModelSource.from_tflite_model_file('../tmp/artifacts/pose_classifier.tflite')
         model_format = ml.TFLiteFormat(model_source=model)
         model = ml.Model(
             display_name='pose_classifier_test',
