@@ -1,0 +1,6 @@
+tensorflow
+tensorflow-hub
+numpy
+matplotlib
+tqdm
+scikit-learn
