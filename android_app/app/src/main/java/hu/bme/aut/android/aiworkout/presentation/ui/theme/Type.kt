@@ -1,4 +1,4 @@
-package hu.bme.aut.android.aiworkout.ui.theme
+package hu.bme.aut.android.aiworkout.presentation.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

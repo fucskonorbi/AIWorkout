@@ -11,7 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.storage.FirebaseStorage
-import hu.bme.aut.android.aiworkout.ui.theme.AIWorkoutTheme
+import hu.bme.aut.android.aiworkout.presentation.ui.theme.AIWorkoutTheme
+import hu.bme.aut.android.aiworkout.util.Navigation
 import java.io.File
 
 class MainActivity : ComponentActivity() {
@@ -37,22 +38,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    Navigation()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    AIWorkoutTheme {
-        Greeting("Android")
     }
 }
