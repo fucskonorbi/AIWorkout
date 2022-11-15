@@ -1,6 +1,10 @@
 package hu.bme.aut.android.aiworkout.util
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,12 +19,8 @@ import hu.bme.aut.android.aiworkout.presentation.workout_details.WorkoutDetailsS
 import hu.bme.aut.android.aiworkout.presentation.workouts.WorkoutsScreen
 
 @Composable
-fun Navigation() {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "splash") {
-        composable("splash") {
-            SplashScreen(navController)
-        }
+fun Navigation(navController: NavHostController, modifier: Modifier = Modifier) {
+    NavHost(navController = navController, startDestination = "home") {
         composable("register") {
             RegisterScreen(navController)
         }
