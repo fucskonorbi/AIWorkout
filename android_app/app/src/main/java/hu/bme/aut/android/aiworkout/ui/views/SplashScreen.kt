@@ -9,15 +9,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.android.aiworkout.R
 
+@Destination
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navigator: DestinationsNavigator
 ) {
     LaunchedEffect(key1 = true) {
-        navController.navigate("register")
+//        navController.navigate("register")
     }
     Box(
         modifier = Modifier.fillMaxSize(),

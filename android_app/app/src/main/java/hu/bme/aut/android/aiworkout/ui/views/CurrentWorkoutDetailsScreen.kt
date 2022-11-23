@@ -1,4 +1,4 @@
-package hu.bme.aut.android.aiworkout.presentation.settings
+package hu.bme.aut.android.aiworkout.presentation.current_workout
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -7,8 +7,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun SettingsScreen(
+fun CurrentWorkoutDetailsScreen(
     navigator: DestinationsNavigator
 ) {
+
 
 }

@@ -16,16 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.android.aiworkout.ui.theme.AIWorkoutTheme
 
+@Destination(start=true)
 @Composable
-fun LoginScreen(
-    navController: NavController
+fun AuthScreen(
+    navigator: DestinationsNavigator
 ) {
     var (email, _) = remember { mutableStateOf("") }
     var (password, _) = remember { mutableStateOf("") }
@@ -90,11 +91,4 @@ fun LoginScreen(
         }
 
     }
-}
-
-// Preview
-@Preview
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController())
 }

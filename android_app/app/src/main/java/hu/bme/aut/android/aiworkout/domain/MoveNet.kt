@@ -11,28 +11,28 @@ enum class ModelType {
     Thunder
 }
 
-class MoveNet(private val interpreter: Interpreter): PoseDetector {
-
-    private val inputWidth = interpreter.getInputTensor(0).shape()[1]
-    private val inputHeight = interpreter.getInputTensor(0).shape()[2]
-    private var CPU_NUM_THREADS = 4
-
-    override fun close() {
-        interpreter.close()
-    }
-
-    fun create(context: Context, device: Device, modelType: ModelType): MoveNet {
-        val options = Interpreter.Options()
-        options.setNumThreads(CPU_NUM_THREADS)
-        var gpuDelegate: GpuDelegate? = null
-
-        when (device) {
-            Device.CPU -> {
-            }
-            Device.GPU -> {
-                gpuDelegate = GpuDelegate()
-                options.addDelegate(gpuDelegate)
-            }
-        }
-    }
-}
+//class MoveNet(private val interpreter: Interpreter): PoseDetector {
+//
+//    private val inputWidth = interpreter.getInputTensor(0).shape()[1]
+//    private val inputHeight = interpreter.getInputTensor(0).shape()[2]
+//    private var CPU_NUM_THREADS = 4
+//
+//    override fun close() {
+//        interpreter.close()
+//    }
+//
+//    fun create(context: Context, device: Device, modelType: ModelType): MoveNet {
+//        val options = Interpreter.Options()
+//        options.setNumThreads(CPU_NUM_THREADS)
+//        var gpuDelegate: GpuDelegate? = null
+//
+//        when (device) {
+//            Device.CPU -> {
+//            }
+//            Device.GPU -> {
+//                gpuDelegate = GpuDelegate()
+//                options.addDelegate(gpuDelegate)
+//            }
+//        }
+//    }
+//}

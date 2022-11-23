@@ -1,9 +1,13 @@
 package hu.bme.aut.android.aiworkout.data
 
+import com.google.type.DateTime
+import hu.bme.aut.android.aiworkout.data.WorkoutTypes
+
 data class WorkoutInfo(
     val id: Int,
-    val duration: Int,
-    val number_of_exercises: Int,
-    val number_of_reps: Int,
-    val date: String,
+    val duration: Int, // in seconds
+    val pushupCount: Int,
+    val squatCount: Int,
+    val situpCount: Int,
+    val date: DateTime
 )
