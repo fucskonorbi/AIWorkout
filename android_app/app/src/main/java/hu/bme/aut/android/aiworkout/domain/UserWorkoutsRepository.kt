@@ -9,4 +9,5 @@ interface UserWorkoutsRepository {
     suspend fun getWorkouts(): Flow<Resource<List<WorkoutInfo>>>
     suspend fun deleteWorkout(id: Int): Flow<Resource<WorkoutInfo>>
     suspend fun addWorkout(workoutInfo: WorkoutInfo): Flow<Resource<WorkoutInfo>>
+    suspend fun saveWorkout(workoutInfo: WorkoutInfo): Flow<Resource<WorkoutInfo>>
 }

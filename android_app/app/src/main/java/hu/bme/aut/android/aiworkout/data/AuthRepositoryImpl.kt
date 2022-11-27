@@ -5,6 +5,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import hu.bme.aut.android.aiworkout.domain.AuthRepository
 import hu.bme.aut.android.aiworkout.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,24 +18,28 @@ class AuthRepositoryImpl @Inject constructor(
     override val user: FirebaseUser?
         get() = firebaseAuth.currentUser
 
-    override suspend fun login(email: String, password: String): Resource<FirebaseUser> {
-        return try{
-            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            Resource.Success(authResult.user!!)
-        } catch (e: Exception){
-            e.printStackTrace()
-            Resource.Error(e.message ?: "Error")
+    override suspend fun login(email: String, password: String): Flow<Resource<FirebaseUser>> {
+        return flow {
+            emit(Resource.Loading())
+            try {
+                val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+                emit(Resource.Success(result.user!!))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message!!))
+            }
         }
     }
 
-    override suspend fun register(email: String, password: String): Resource<FirebaseUser> {
-        return try{
-            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            authResult?.user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(email).build())?.await()
-            Resource.Success(authResult.user!!)
-        } catch (e: Exception){
-            e.printStackTrace()
-            Resource.Error(e.message ?: "Error")
+    override suspend fun register(email: String, password: String): Flow<Resource<FirebaseUser>> {
+        return flow {
+            emit(Resource.Loading())
+            try {
+                val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+                val user = result.user!!
+                emit(Resource.Success(user))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message!!))
+            }
         }
     }
 

@@ -14,17 +14,21 @@ import hu.bme.aut.android.aiworkout.data.AuthRepositoryImpl
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
 import hu.bme.aut.android.aiworkout.domain.AuthRepository
 import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
     @Provides
+    @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
 
     @Provides
+    @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
 
     @Provides
+    @Singleton
     fun provideUserWorkoutsRepository(
         workoutsReference: CollectionReference
     ): UserWorkoutsRepository {
@@ -32,6 +36,7 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideFirebaseCollectionReference(
         firebaseFirestore: FirebaseFirestore
     ): CollectionReference {
@@ -39,6 +44,7 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideAuthRepository(
         firebaseAuth: FirebaseAuth
     ): AuthRepository {

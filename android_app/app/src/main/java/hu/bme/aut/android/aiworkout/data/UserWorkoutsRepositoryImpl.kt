@@ -50,4 +50,16 @@ class UserWorkoutsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveWorkout(workoutInfo: WorkoutInfo): Flow<Resource<WorkoutInfo>> {
+        return flow{
+            emit(Resource.Loading())
+            try {
+                workoutsReference.document(workoutInfo.id.toString()).set(workoutInfo).await()
+                emit(Resource.Success(workoutInfo))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Error"))
+            }
+        }
+    }
+
 }
