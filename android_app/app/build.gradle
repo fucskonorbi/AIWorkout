@@ -74,6 +74,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.6.0-alpha04")
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
 
+    // Pose detection with default models
+    implementation 'com.google.mlkit:pose-detection:18.0.0-beta3'
+    // Pose detection with accurate models
+    implementation 'com.google.mlkit:pose-detection-accurate:18.0.0-beta3'
+
     implementation "com.google.accompanist:accompanist-permissions:0.17.0"
 
     // Compose Nav Destinations

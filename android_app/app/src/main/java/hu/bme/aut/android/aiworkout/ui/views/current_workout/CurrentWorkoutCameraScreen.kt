@@ -1,10 +1,8 @@
 package hu.bme.aut.android.aiworkout.ui.views
 
 import android.content.Context
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import android.util.Size
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -24,9 +22,11 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionRequired
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.android.aiworkout.ui.views.current_workout.CurrentWorkoutViewModel
+import hu.bme.aut.android.aiworkout.ui.views.current_workout.PoseAnalyzer
 import kotlinx.coroutines.delay
 import java.util.concurrent.Executor
 import kotlin.time.Duration.Companion.seconds
@@ -78,6 +78,7 @@ fun CurrentWorkoutCameraScreen(
         AndroidView(
             modifier = Modifier.matchParentSize(),
             factory = { context ->
+                val previewView = PreviewView(context)
                 val executor = ContextCompat.getMainExecutor(context)
                 cameraProviderFuture.addListener(
                     {
@@ -89,10 +90,19 @@ fun CurrentWorkoutCameraScreen(
                             it.setSurfaceProvider(previewCameraView.surfaceProvider)
                         }
 
+                        val imageAnalysis = ImageAnalysis.Builder()
+                            .setTargetResolution(Size(previewView.width, previewView.height))
+                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                            .build()
+                            .also {
+                                it.setAnalyzer(executor, PoseAnalyzer(context))
+                            }
+
                         cameraProvider.bindToLifecycle(
                             lifecycleOwner,
                             cameraSelector,
                             prev,
+                            imageAnalysis
                         )
                     }, executor
                 )

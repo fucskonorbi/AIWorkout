@@ -13,6 +13,8 @@ import dagger.hilt.components.SingletonComponent
 import hu.bme.aut.android.aiworkout.data.AuthRepositoryImpl
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
 import hu.bme.aut.android.aiworkout.domain.AuthRepository
+import hu.bme.aut.android.aiworkout.domain.MoveNet
+import hu.bme.aut.android.aiworkout.domain.PoseDetector
 import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
 import javax.inject.Singleton
 
@@ -51,4 +53,9 @@ class AppModule {
         return AuthRepositoryImpl(firebaseAuth)
     }
 
+//    @Provides
+//    @Singleton
+//    fun providePoseDetector(): PoseDetector {
+//        return MoveNet()
+//    }
 }

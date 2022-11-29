@@ -20,22 +20,4 @@ class CurrentWorkoutViewModel @Inject constructor(
     private val _currentWorkoutState = Channel<CurrentWorkoutState>()
     val currentWorkoutState  = _currentWorkoutState.receiveAsFlow()
 
-    private val _timerState = Channel<TimerState>()
-    val timerState = _timerState.receiveAsFlow()
-
-    fun startWorkout() = viewModelScope.launch {
-        _timerState.send(TimerState(timer = 0, isTimerRunning = true))
-    }
-
-    fun stopAndSaveWorkout(workoutInfo: WorkoutInfo) = viewModelScope.launch {
-        _timerState.send(TimerState(timer = 0, isTimerRunning = false))
-        repository.addWorkout(workoutInfo)
-    }
-
-    fun pauseWorkout() = viewModelScope.launch {
-        _timerState.send(TimerState(isTimerRunning = false))
-    }
-
-
-
 }
