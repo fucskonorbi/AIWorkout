@@ -38,8 +38,8 @@ class MoveNet(
         private const val CPU_NUM_THREADS = 4
 
         // TFLite file names.
-        private const val LIGHTNING_FILENAME = "lite-model_movenet_singlepose_lightning_3.tflite"
-        private const val THUNDER_FILENAME = "lite-model_movenet_singlepose_thunder_3.tflite"
+        private const val LIGHTNING_FILENAME = "lite-model_movenet_singlepose_lightning_tflite_int8_4.tflite"
+        private const val THUNDER_FILENAME = "lite-model_movenet_singlepose_thunder_tflite_int8_4.tflite"
 
         fun create(context: Context, device: Device, modelType: ModelType): MoveNet {
             val options = Interpreter.Options()

@@ -1,5 +1,6 @@
 package hu.bme.aut.android.aiworkout.di
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -9,13 +10,11 @@ import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import hu.bme.aut.android.aiworkout.data.AuthRepositoryImpl
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
-import hu.bme.aut.android.aiworkout.domain.AuthRepository
-import hu.bme.aut.android.aiworkout.domain.MoveNet
-import hu.bme.aut.android.aiworkout.domain.PoseDetector
-import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
+import hu.bme.aut.android.aiworkout.domain.*
 import javax.inject.Singleton
 
 @Module
@@ -53,9 +52,15 @@ class AppModule {
         return AuthRepositoryImpl(firebaseAuth)
     }
 
-//    @Provides
-//    @Singleton
-//    fun providePoseDetector(): PoseDetector {
-//        return MoveNet()
-//    }
+    @Provides
+    @Singleton
+    fun provideMoveNetDetector(@ApplicationContext appContext: Context): MoveNet {
+        return MoveNet.create(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun providePoseClassifier(@ApplicationContext appContext: Context): PoseClassifier {
+        return PoseClassifier.create(appContext)
+    }
 }

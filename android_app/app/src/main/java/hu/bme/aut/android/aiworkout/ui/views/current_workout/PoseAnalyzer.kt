@@ -1,8 +1,8 @@
 package hu.bme.aut.android.aiworkout.ui.views.current_workout
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
+import android.media.Image
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -12,37 +12,43 @@ import com.google.firebase.ml.modeldownloader.DownloadType
 import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import hu.bme.aut.android.aiworkout.domain.MoveNet
 import hu.bme.aut.android.aiworkout.domain.PoseClassifier
+import hu.bme.aut.android.aiworkout.domain.PoseDetector
 import java.util.concurrent.TimeUnit
 import org.tensorflow.lite.Interpreter
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
 
 
-class PoseAnalyzer(ctx: Context) : ImageAnalysis.Analyzer{
+class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClassifier: PoseClassifier
+) : ImageAnalysis.Analyzer{
     private var lastAnalyzedTimestamp = 0L
     private var lastPose: Int = 0
-//    private var poseClassifierInterpreter: Interpreter? = createPoseClassifierInterpreter()
-    private var poseClassifier: PoseClassifier = PoseClassifier.create(context = ctx)
-//    private var MoveNetInterpreter: Interpreter? = createMoveNetInterpreter()
-    private var poseDetector: MoveNet = MoveNet.create(context = ctx)
-//    private lateinit var poseListener: List<Pair<String, Float>>.() -> Unit
 
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
+        Log.i("PoseAnalyzer", "Entered analyze")
         if (image.image == null) {
+            Log.d("PoseAnalyzer", "Image is null")
             return
         }
         val currentTimestamp = System.currentTimeMillis()
         if (currentTimestamp - lastAnalyzedTimestamp >=
-            TimeUnit.SECONDS.toMillis(50)
+            TimeUnit.SECONDS.toMillis(5)
         ) {
-            val bitmap = imageProxyToBitmap(image)
-            val person = bitmap?.let { poseDetector.estimatePoses(bitmap) }
-            val pose = person?.let { poseClassifier.classify(person) }
-
+            Log.i("PoseAnalyzer", "Entered if statement")
+            val bitmap = image.image!!.toBitmap()
+            Log.i("PoseAnalyzer", "Bitmap created")
+            val person = bitmap.let { poseDetector.estimatePoses(bitmap) }
+            Log.i("PoseAnalyzer", "Person: $person")
+            val pose = person.let { poseClassifier.classify(person) }
+            Log.i("PoseAnalyzer", "Pose: $pose")
+//
 //            this.poseListener(pose!!)
-            Log.d("PoseAnalyzer", pose.toString())
+//            Log.d("PoseAnalyzer", pose.toString())
             lastAnalyzedTimestamp = currentTimestamp
         }
+        Log.i("PoseAnalyzer", "Closing image")
+        image.close()
     }
 
 //    private fun createPoseClassifierInterpreter(): Interpreter? {
@@ -52,7 +58,7 @@ class PoseAnalyzer(ctx: Context) : ImageAnalysis.Analyzer{
 //            .requireWifi()  // Also possible: .requireCharging() and .requireDeviceIdle()
 //            .build()
 //        FirebaseModelDownloader.getInstance()
-//            .getModel("pose_classifier.tflite", DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND,
+//            .getModel("pose_classifier_model.tflite", DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND,
 //                conditions)
 //            .addOnSuccessListener { model: CustomModel? ->
 //                // Download complete. Depending on your app, you could enable the ML
@@ -105,14 +111,6 @@ class PoseAnalyzer(ctx: Context) : ImageAnalysis.Analyzer{
 //        return interpreter
 //    }
 
-    private fun imageProxyToBitmap(image: ImageProxy): Bitmap? {
-        val planeProxy = image.planes[0]
-        val buffer = planeProxy.buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer[bytes]
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-    }
-
     interface PoseAnalyzerListener {
         fun onPoseDetected(detections: List<Pair<String, Float>>)
     }
@@ -120,7 +118,25 @@ class PoseAnalyzer(ctx: Context) : ImageAnalysis.Analyzer{
 //        this.poseListener = listener::onPoseDetected
     }
 
-    init {
-        var context = ctx
-    }
+}
+
+fun Image.toBitmap(): Bitmap {
+    val yBuffer = planes[0].buffer // Y
+    val vuBuffer = planes[2].buffer // VU
+
+    val ySize = yBuffer.remaining()
+    val vuSize = vuBuffer.remaining()
+
+    val nv21 = ByteArray(ySize + vuSize)
+
+    yBuffer.get(nv21, 0, ySize)
+    vuBuffer.get(nv21, ySize, vuSize)
+
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+    val imageBytes = out.toByteArray()
+    // close the output stream
+    out.close()
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 }
