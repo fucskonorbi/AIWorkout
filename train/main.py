@@ -3,6 +3,7 @@ import tensorflow as tf
 import wandb
 from firebase_admin import credentials
 from firebase_admin import ml
+import numpy as np
 
 from utils.config import Config
 from utils.image_data import ImageDataset

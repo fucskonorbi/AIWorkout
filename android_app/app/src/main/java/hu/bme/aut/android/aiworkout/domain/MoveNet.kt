@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import android.graphics.PointF
 import android.graphics.RectF
 import android.os.SystemClock
+import android.util.Log
 import hu.bme.aut.android.aiworkout.data.BodyPart
 import hu.bme.aut.android.aiworkout.data.Device
 import hu.bme.aut.android.aiworkout.data.KeyPoint
@@ -38,8 +39,8 @@ class MoveNet(
         private const val CPU_NUM_THREADS = 4
 
         // TFLite file names.
-        private const val LIGHTNING_FILENAME = "lite-model_movenet_singlepose_lightning_3.tflite"
-        private const val THUNDER_FILENAME = "lite-model_movenet_singlepose_thunder_3.tflite"
+        private const val LIGHTNING_FILENAME = "lite-model_movenet_singlepose_lightning_tflite_int8_4.tflite"
+        private const val THUNDER_FILENAME = "lite-model_movenet_singlepose_thunder_tflite_int8_4.tflite"
 
         fun create(context: Context, device: Device, modelType: ModelType): MoveNet {
             val options = Interpreter.Options()
@@ -97,7 +98,9 @@ class MoveNet(
                 Bitmap.Config.ARGB_8888
             )
             val inputTensor = processInputImage(detectBitmap, inputWidth, inputHeight)
+            Log.i("MoveNet", "inputTensor: ${inputWidth}x${inputHeight}")
             val outputTensor = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
+            Log.i("MoveNet", "outputTensor: ${outputShape[0]}x${outputShape[1]}x${outputShape[2]}")
             val widthRatio = detectBitmap.width.toFloat() / inputWidth
             val heightRatio = detectBitmap.height.toFloat() / inputHeight
 
@@ -116,10 +119,7 @@ class MoveNet(
                     keyPoints.add(
                         KeyPoint(
                             BodyPart.fromInt(idx),
-                            PointF(
-                                x,
-                                y
-                            ),
+                            PointF(x, y),
                             score
                         )
                     )

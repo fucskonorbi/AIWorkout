@@ -3,6 +3,7 @@ package hu.bme.aut.android.aiworkout.ui.views
 import android.content.Context
 import android.util.Size
 import androidx.camera.core.*
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionRequired
@@ -29,14 +31,16 @@ import hu.bme.aut.android.aiworkout.ui.views.current_workout.CurrentWorkoutViewM
 import hu.bme.aut.android.aiworkout.ui.views.current_workout.PoseAnalyzer
 import kotlinx.coroutines.delay
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.seconds
 
 
 @ExperimentalPermissionsApi
 @Destination(start=true)
 @Composable
-fun FaceRecognitionScreen(
+fun WorkoutCameraScreen(
     navigator: DestinationsNavigator,
+    viewModel: CurrentWorkoutViewModel = hiltViewModel()
 ) {
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
@@ -55,7 +59,7 @@ fun FaceRecognitionScreen(
             }
         }
     ) {
-        CurrentWorkoutCameraScreen()
+        CurrentWorkoutCameraScreen(navigator, viewModel)
     }
 }
 
@@ -63,13 +67,15 @@ fun FaceRecognitionScreen(
 
 @Composable
 fun CurrentWorkoutCameraScreen(
+    navigator: DestinationsNavigator,
+    viewModel: CurrentWorkoutViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context)}
-    val previewCameraView = remember { PreviewView(context) }
-    val cameraProvider = remember(cameraProviderFuture) { cameraProviderFuture.get() }
-
+    val previewCameraView = PreviewView(context)
+    val cameraProvider = cameraProviderFuture.get()
+//    val cameraExecutor = Executors.newCachedThreadPool()
 
     Box(
         modifier = Modifier
@@ -93,6 +99,7 @@ fun CurrentWorkoutCameraScreen(
                         val imageAnalysis = ImageAnalysis.Builder()
                             .setTargetResolution(Size(previewView.width, previewView.height))
                             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                            .setImageQueueDepth(10)
                             .build()
                             .also {
                                 it.setAnalyzer(executor, PoseAnalyzer(context))
