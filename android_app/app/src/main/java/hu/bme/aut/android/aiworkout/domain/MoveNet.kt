@@ -116,10 +116,7 @@ class MoveNet(
                     keyPoints.add(
                         KeyPoint(
                             BodyPart.fromInt(idx),
-                            PointF(
-                                x,
-                                y
-                            ),
+                            PointF(x,y),
                             score
                         )
                     )

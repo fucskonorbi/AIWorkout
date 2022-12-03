@@ -7,7 +7,7 @@ import tensorflow as tf
 from sklearn import preprocessing
 from tqdm import tqdm
 
-from ..movenet import detect, visualize
+from train.movenet import detect, visualize
 
 
 class ImageDataset:

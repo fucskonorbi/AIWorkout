@@ -13,6 +13,7 @@ import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import hu.bme.aut.android.aiworkout.domain.MoveNet
 import hu.bme.aut.android.aiworkout.domain.PoseClassifier
 import hu.bme.aut.android.aiworkout.domain.PoseDetector
+import hu.bme.aut.android.aiworkout.util.BitmapUtils.getBitmap
 import java.util.concurrent.TimeUnit
 import org.tensorflow.lite.Interpreter
 import java.io.ByteArrayOutputStream
@@ -36,12 +37,12 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
             TimeUnit.SECONDS.toMillis(5)
         ) {
             Log.i("PoseAnalyzer", "Entered if statement")
-            val bitmap = image.image!!.toBitmap()
+            val bitmap = getBitmap(image)
             Log.i("PoseAnalyzer", "Bitmap created")
-            val person = bitmap.let { poseDetector.estimatePoses(bitmap) }
+            val person = bitmap?.let { poseDetector.estimatePoses(bitmap) }
             Log.i("PoseAnalyzer", "Person: $person")
-            val pose = person.let { poseClassifier.classify(person) }
-            Log.i("PoseAnalyzer", "Pose: $pose")
+//            val pose = person?.let { poseClassifier.classify(person) }
+//            Log.i("PoseAnalyzer", "Pose: $pose")
 //
 //            this.poseListener(pose!!)
 //            Log.d("PoseAnalyzer", pose.toString())
@@ -120,23 +121,23 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
 
 }
 
-fun Image.toBitmap(): Bitmap {
-    val yBuffer = planes[0].buffer // Y
-    val vuBuffer = planes[2].buffer // VU
-
-    val ySize = yBuffer.remaining()
-    val vuSize = vuBuffer.remaining()
-
-    val nv21 = ByteArray(ySize + vuSize)
-
-    yBuffer.get(nv21, 0, ySize)
-    vuBuffer.get(nv21, ySize, vuSize)
-
-    val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
-    val out = ByteArrayOutputStream()
-    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
-    val imageBytes = out.toByteArray()
-    // close the output stream
-    out.close()
-    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-}
+//fun Image.toBitmap(): Bitmap {
+//    val yBuffer = planes[0].buffer // Y
+//    val vuBuffer = planes[2].buffer // VU
+//
+//    val ySize = yBuffer.remaining()
+//    val vuSize = vuBuffer.remaining()
+//
+//    val nv21 = ByteArray(ySize + vuSize)
+//
+//    yBuffer.get(nv21, 0, ySize)
+//    vuBuffer.get(nv21, ySize, vuSize)
+//
+//    val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
+//    val out = ByteArrayOutputStream()
+//    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+//    val imageBytes = out.toByteArray()
+//    // close the output stream
+//    out.close()
+//    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//}

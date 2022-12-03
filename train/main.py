@@ -26,6 +26,7 @@ if __name__ == "__main__":
     model = create_model1((17, 2), num_classes=dataset.unique_classes.shape[0])
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
     model.fit(dataset.keypoints, dataset.labels, epochs=50, batch_size=16)
+    model.summary()
 
     # convert model to tflite
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
