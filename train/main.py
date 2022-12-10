@@ -1,4 +1,5 @@
 import firebase_admin
+import numpy as np
 import tensorflow as tf
 import wandb
 from firebase_admin import credentials
@@ -22,10 +23,10 @@ if __name__ == "__main__":
     # dataset.load_images_and_run_detection()
     dataset.load_keypoints_and_classes_json("./data/image_dataset/detections.json")
     dataset.convert_classes_to_categorical()
-
-    model = create_model1((17, 2), num_classes=dataset.unique_classes.shape[0])
+    flattened_keypoints = np.array([keypoint.flatten() for keypoint in dataset.keypoints])
+    model = create_model1(input_shape=(51,), num_classes=dataset.unique_classes.shape[0])
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-    model.fit(dataset.keypoints, dataset.labels, epochs=50, batch_size=16)
+    model.fit(flattened_keypoints, dataset.labels, epochs=50, batch_size=16)
     model.summary()
 
     # convert model to tflite

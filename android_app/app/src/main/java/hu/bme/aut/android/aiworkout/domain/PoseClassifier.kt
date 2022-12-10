@@ -73,25 +73,20 @@ class PoseClassifier(
         }
     }
 
-    fun classify(person: Person?): List<Pair<String, Float>> {
+    fun classify(person: Person): List<Pair<String, Float>> {
         // Preprocess the pose estimation result to a flat array
-        Log.i("PoseAnalyzer", "Input shape: ${input.size}")
-        val inputVector = FloatArray(input[1] * input[2])
-        Log.i("PoseAnalyzer", "Input vector size: ${inputVector.size}")
-        // Person has 17 keypoints
-        // Each keypoint has 3 values (x, y, confidence)
-        // Input to model should be (17 * 2) = 34 values
-        person?.keyPoints?.forEachIndexed { index, keyPoint ->
+        val inputVector = FloatArray(input[1])
+        person.keyPoints.forEachIndexed { index, keyPoint ->
             inputVector[index * 2] = keyPoint.coordinate.x
             inputVector[index * 2 + 1] = keyPoint.coordinate.y
+            inputVector[index * 2 + 2] = keyPoint.score
         }
-
         // Postprocess the model output to human readable class names
         val outputTensor = FloatArray(output[1])
         interpreter.run(arrayOf(inputVector), arrayOf(outputTensor))
         val output = mutableListOf<Pair<String, Float>>()
         outputTensor.forEachIndexed { index, score ->
-            output.add(Pair(labels[index], score))
+            output.add(Pair(labels.elementAt(index), score))
         }
         return output
     }

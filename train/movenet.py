@@ -42,13 +42,13 @@ def visualize(image: np.ndarray, keypoints, mode="save"):
 
     image = image[0]
     for keypoint in keypoints:
-        x, y = keypoint
+        x, y, _ = keypoint
         cv2.circle(image, (int(x), int(y)), 2, (0, 255, 0), -1)
 
     # lines between keypoints
     for edge, color in KEYPOINT_EDGE_INDS_TO_COLOR.items():
-        x0, y0 = keypoints[edge[0]]
-        x1, y1 = keypoints[edge[1]]
+        x0, y0, _ = keypoints[edge[0]]
+        x1, y1, _ = keypoints[edge[1]]
         cv2.line(image, (int(x0), int(y0)), (int(x1), int(y1)), color, 2)
     if mode == "save":
         cv2.imwrite("output.jpg", image)
