@@ -1,5 +1,6 @@
 package hu.bme.aut.android.aiworkout.ui.views.current_workout
 
+import android.content.Context
 import android.graphics.*
 import android.media.Image
 import android.util.Log
@@ -7,8 +8,12 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import hu.bme.aut.android.aiworkout.domain.PoseClassifier
 import hu.bme.aut.android.aiworkout.domain.PoseDetector
+import hu.bme.aut.android.aiworkout.ml.LiteModelMovenetSingleposeLightningTfliteInt84
 import hu.bme.aut.android.aiworkout.util.YuvToRgbConverter
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import kotlin.experimental.and
 
@@ -50,7 +55,6 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
         Log.i("PoseAnalyzer", "Pose: $pose")
         lastAnalyzedTimestamp = currentTimestamp
 //        }
-        imageBitmap.eraseColor(Color.TRANSPARENT);
         image.close()
     }
 

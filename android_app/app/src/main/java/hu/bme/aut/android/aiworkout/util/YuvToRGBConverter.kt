@@ -10,6 +10,7 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicYuvToRGB
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class YuvToRgbConverter(context: Context) {
     private val rs = RenderScript.create(context)
@@ -28,6 +29,8 @@ class YuvToRgbConverter(context: Context) {
             pixelCount = image.cropRect.width() * image.cropRect.height()
             yuvBuffer = ByteBuffer.allocateDirect(
                 pixelCount * ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888) / 8)
+            yuvBuffer.order(ByteOrder.nativeOrder())
+
         }
 
         // Get the YUV data in byte array form
