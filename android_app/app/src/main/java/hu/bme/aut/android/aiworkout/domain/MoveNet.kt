@@ -140,7 +140,7 @@ class MoveNet(
             }
         }
         lastInferenceTimeNanos = SystemClock.elapsedRealtimeNanos() - inferenceStartTimeNanos
-
+        Log.d("MoveNet", Person(keyPoints, totalScore / numKeyPoints).toString())
         return Person(keyPoints, totalScore / numKeyPoints)
     }
 

@@ -19,15 +19,16 @@ class ImageDataset:
         self.unique_classes = None
         self.detections = []
 
-
     def save_detections_to_csv(self, file_path):
         """Saves the detections to a csv file."""
         with open(file_path, "w") as f:
             writer = csv.writer(f)
-            writer.writerow(["image_name", "keypoints_x", "keypoints_y", "class"])
+            writer.writerow(["image_name", "keypoints_x", "keypoints_y", "score", "class"])
             for detection in self.detections:
                 print(detection)
-                writer.writerow([detection["image_name"], detection["keypoints_x"], detection["keypoints_y"], detection["class"]])
+                writer.writerow(
+                    [detection["image_name"], detection["keypoints_x"], detection["keypoints_y"],
+                     detection["score"], detection["class"]])
 
     def save_detections_to_json(self, file_path):
         """Saves the detections to a json file."""
@@ -48,27 +49,29 @@ class ImageDataset:
             next(reader)
             for row in reader:
                 print(row)
-                image_name, keypoints_x, keypoints_y, class_name = row
+                image_name, keypoints_x, keypoints_y, score, class_name = row
                 print(keypoints_x)
 
                 # keypoints should be of shape (17, 2)
                 keypoints_x = np.array(keypoints_x.split(" ")).astype(np.float32)
                 keypoints_y = np.array(keypoints_y.split(" ")).astype(np.float32)
-                self.keypoints.append(np.stack([keypoints_x, keypoints_y], axis=1))
+                scores = np.array(score.split(" ")).astype(np.float32)
+                self.keypoints.append(np.stack([keypoints_x, keypoints_y, scores], axis=1))
                 self.labels.append(class_name)
             self.unique_classes = np.unique(self.labels)
 
     def load_keypoints_and_classes_json(self, file_path):
-        """format is: frame_name, x, y, class_name where x.shape == y.shape == (17,)"""
+        """format is: frame_name, x, y, score, class_name where x.shape == y.shape == (17,)"""
         keypoints = []
         labels = []
         with open(file_path, "r") as f:
             data = json.load(f)
             for detection in data:
-                image_name, keypoints_x, keypoints_y, class_name = detection.values()
+                image_name, keypoints_x, keypoints_y, score, class_name = detection.values()
                 keypoints_x = np.array(keypoints_x).astype(np.float32)
                 keypoints_y = np.array(keypoints_y).astype(np.float32)
-                keypoints.append(np.stack([keypoints_x, keypoints_y], axis=1))
+                scores = np.array(score).astype(np.float32)
+                keypoints.append(np.stack([keypoints_x, keypoints_y, scores], axis=1))
                 labels.append(class_name)
             self.keypoints = np.array(keypoints)
             self.labels = np.array(labels)
@@ -76,15 +79,18 @@ class ImageDataset:
 
     def load_images_and_run_detection(self):
         """Loads images from the images folder into TensorFlow format and reshapes them to (192,192)."""
-        
+
         # get the subfolders in the images folder
-        subfolders = sorted([n for n in os.listdir(self.images_folder) if os.path.isdir(os.path.join(self.images_folder, n))])
+        subfolders = sorted(
+            [n for n in os.listdir(self.images_folder) if os.path.isdir(os.path.join(self.images_folder, n))])
         # each subfolder's name is a class
         self.unique_classes = subfolders
         # get the images in each subfolder
         images = []
         for subfolder in subfolders:
-            images_in_subfolder = sorted([os.path.join(self.images_folder, subfolder, n) for n in os.listdir(os.path.join(self.images_folder, subfolder)) if os.path.isfile(os.path.join(self.images_folder, subfolder, n))])
+            images_in_subfolder = sorted([os.path.join(self.images_folder, subfolder, n) for n in
+                                          os.listdir(os.path.join(self.images_folder, subfolder)) if
+                                          os.path.isfile(os.path.join(self.images_folder, subfolder, n))])
             images.extend(images_in_subfolder)
 
         for image_path in tqdm(images):
@@ -93,7 +99,7 @@ class ImageDataset:
                 image = tf.io.decode_image(image)
                 image = tf.cast(tf.image.resize_with_pad(image, 192, 192), dtype=tf.int32)
                 image = tf.expand_dims(image, axis=0)
-            except:
+            except Exception as e:
                 continue
 
             _, img_height, img_width, channels = image.shape
@@ -102,7 +108,8 @@ class ImageDataset:
             # run detection on GPU
             person = detect(image)
 
-            min_score = tf.math.reduce_min(person[0, 0, :, 2])
+            scores = np.array(person[0, 0, :, 2])
+            min_score = np.min(scores)
             keep_image = min_score >= self.detection_threshold
             if not keep_image:
                 continue
@@ -111,8 +118,14 @@ class ImageDataset:
             keypoints = np.array(
                 [person[0, 0, :, 1] * img_width, person[0, 0, :, 0] * img_height], dtype=np.float32)
             keypoints = np.transpose(keypoints)
+            # keypoints shape is (17, 2)
+            # scores shape is (17,)
+            # make keypoints shape (17, 3)
+            scores = np.expand_dims(scores, axis=1)
+            keypoints = np.concatenate([keypoints, scores], axis=-1)
             visualize(np.array(image), keypoints, mode="save")
             keypoints = np.expand_dims(keypoints, axis=0)
+
             self.keypoints = np.append(self.keypoints, keypoints, axis=0) if self.keypoints is not None else keypoints
 
             # detections is a list of dictionaries, each dictionary has the following keys:
@@ -121,6 +134,7 @@ class ImageDataset:
                 "image_name": image_path.split(os.sep)[-1],
                 "keypoints_x": keypoints[0, :, 0].tolist(),
                 "keypoints_y": keypoints[0, :, 1].tolist(),
+                "score": keypoints[0, :, 2].tolist(),
                 "class": image_path.split(os.sep)[-2]
             }
             self.detections.append(detection)

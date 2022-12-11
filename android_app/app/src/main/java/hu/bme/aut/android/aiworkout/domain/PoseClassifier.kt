@@ -21,7 +21,7 @@ class PoseClassifier(
     private val output = interpreter.getOutputTensor(0).shape()
 
     companion object {
-        private const val MODEL_FILENAME = "pose_classifier.tflite"
+        private const val MODEL_FILENAME = "pose_classifier_model.tflite"
         private const val LABELS_FILENAME = "labels.txt"
         private const val CPU_NUM_THREADS = 4
 
@@ -73,22 +73,22 @@ class PoseClassifier(
         }
     }
 
-    fun classify(person: Person?): List<Pair<String, Float>> {
+    fun classify(person: Person): List<Pair<String, Float>> {
         // Preprocess the pose estimation result to a flat array
-        Log.i("PoseAnalyzer", "Keypoints size: ${person?.keyPoints?.size}")
-        val inputVector = FloatArray((person?.keyPoints?.size?.times(3)) ?: 0)
-        person?.keyPoints?.forEachIndexed { index, keyPoint ->
-            inputVector[index * 3] = keyPoint.coordinate.y
-            inputVector[index * 3 + 1] = keyPoint.coordinate.x
-            inputVector[index * 3 + 2] = keyPoint.score
-        }
 
+        val inputVector = FloatArray(input[1])
+        person.keyPoints.forEachIndexed { index, keyPoint ->
+            inputVector[index * 2] = keyPoint.coordinate.x
+            inputVector[index * 2 + 1] = keyPoint.coordinate.y
+            inputVector[index * 2 + 2] = keyPoint.score
+
+        }
         // Postprocess the model output to human readable class names
         val outputTensor = FloatArray(output[1])
         interpreter.run(arrayOf(inputVector), arrayOf(outputTensor))
         val output = mutableListOf<Pair<String, Float>>()
         outputTensor.forEachIndexed { index, score ->
-            output.add(Pair(labels[index], score))
+            output.add(Pair(labels.elementAt(index), score))
         }
         return output
     }

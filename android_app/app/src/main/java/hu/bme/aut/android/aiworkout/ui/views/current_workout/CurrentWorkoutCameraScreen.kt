@@ -1,6 +1,7 @@
 package hu.bme.aut.android.aiworkout.ui.views
 
 import android.content.Context
+import android.graphics.ImageFormat
 import android.util.Size
 import androidx.camera.core.*
 import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
@@ -27,6 +28,10 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
+import hu.bme.aut.android.aiworkout.domain.MoveNet
+import hu.bme.aut.android.aiworkout.domain.PoseClassifier
+import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
 import hu.bme.aut.android.aiworkout.ui.views.current_workout.CurrentWorkoutViewModel
 import hu.bme.aut.android.aiworkout.ui.views.current_workout.PoseAnalyzer
 import kotlinx.coroutines.delay
@@ -38,11 +43,13 @@ import kotlin.time.Duration.Companion.seconds
 @ExperimentalPermissionsApi
 @Destination(start=true)
 @Composable
-fun WorkoutCameraScreen(
+fun CurrentWorkoutInitialScreen(
     navigator: DestinationsNavigator,
-    viewModel: CurrentWorkoutViewModel = hiltViewModel()
+    CurrentWorkoutViewModel: CurrentWorkoutViewModel = hiltViewModel()
 ) {
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     PermissionRequired(
         permissionState = cameraPermissionState,
@@ -59,7 +66,7 @@ fun WorkoutCameraScreen(
             }
         }
     ) {
-        CurrentWorkoutCameraScreen(navigator, viewModel)
+        CurrentWorkoutCameraScreen(navigator, context, lifecycleOwner, CurrentWorkoutViewModel)
     }
 }
 
@@ -68,14 +75,13 @@ fun WorkoutCameraScreen(
 @Composable
 fun CurrentWorkoutCameraScreen(
     navigator: DestinationsNavigator,
-    viewModel: CurrentWorkoutViewModel = hiltViewModel()
+    context: Context,
+    lifecycleOwner: LifecycleOwner,
+    CurrentWorkoutViewModel: CurrentWorkoutViewModel
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context)}
-    val previewCameraView = PreviewView(context)
-    val cameraProvider = cameraProviderFuture.get()
-//    val cameraExecutor = Executors.newCachedThreadPool()
+    val previewCameraView = remember { PreviewView(context) }
+    val cameraProvider = remember(cameraProviderFuture) { cameraProviderFuture.get() }
 
     Box(
         modifier = Modifier
@@ -97,12 +103,14 @@ fun CurrentWorkoutCameraScreen(
                         }
 
                         val imageAnalysis = ImageAnalysis.Builder()
-                            .setTargetResolution(Size(previewView.width, previewView.height))
+                            .setTargetResolution(Size(previewView.width/2, previewView.height/2))
                             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                             .setImageQueueDepth(10)
+//                            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                             .build()
                             .also {
-                                it.setAnalyzer(executor, PoseAnalyzer(context))
+                                it.setAnalyzer(executor, PoseAnalyzer(CurrentWorkoutViewModel.moveNet, CurrentWorkoutViewModel.poseClassifier,
+                                    CurrentWorkoutViewModel.yuvToRgbConverter))
                             }
 
                         cameraProvider.bindToLifecycle(
