@@ -75,11 +75,13 @@ class PoseClassifier(
 
     fun classify(person: Person): List<Pair<String, Float>> {
         // Preprocess the pose estimation result to a flat array
+
         val inputVector = FloatArray(input[1])
         person.keyPoints.forEachIndexed { index, keyPoint ->
             inputVector[index * 2] = keyPoint.coordinate.x
             inputVector[index * 2 + 1] = keyPoint.coordinate.y
             inputVector[index * 2 + 2] = keyPoint.score
+
         }
         // Postprocess the model output to human readable class names
         val outputTensor = FloatArray(output[1])

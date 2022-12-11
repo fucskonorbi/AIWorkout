@@ -19,7 +19,6 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
     private var lastAnalyzedTimestamp = 0L
     private var lastPose: Int = 0
     private lateinit var imageBitmap: Bitmap
-
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
         if (image.image == null) {
@@ -55,11 +54,16 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
         image.close()
     }
 
-    interface PoseAnalyzerListener {
-        fun onPoseDetected(detections: List<Pair<String, Float>>)
-    }
-    fun setPoseAnalyzerListener(listener: PoseAnalyzerListener) {
-//        this.poseListener = listener::onPoseDetected
+    private fun runMoveNetDetection(byteBuffer: ByteBuffer, context: Context): TensorBuffer {
+        val model = LiteModelMovenetSingleposeLightningTfliteInt84.newInstance(context)
+        // Creates inputs for reference.
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 192, 192, 3), DataType.UINT8)
+        inputFeature0.loadBuffer(byteBuffer)
+
+        // Runs model inference and gets result.
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+        return outputFeature0
     }
 
     fun ImageProxy.convertImageProxyToBitmap(): Bitmap {
@@ -118,7 +122,6 @@ class PoseAnalyzer(private var poseDetector: PoseDetector, private var poseClass
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
         return bitmap
     }
-
 }
 
 //fun Image.toBitmap(): Bitmap {

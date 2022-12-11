@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.ImageFormat
 import android.util.Size
 import androidx.camera.core.*
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import hu.bme.aut.android.aiworkout.ui.views.current_workout.CurrentWorkoutViewM
 import hu.bme.aut.android.aiworkout.ui.views.current_workout.PoseAnalyzer
 import kotlinx.coroutines.delay
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.seconds
 
 

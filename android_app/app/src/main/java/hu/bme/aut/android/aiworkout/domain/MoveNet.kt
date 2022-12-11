@@ -98,7 +98,9 @@ class MoveNet(
                 Bitmap.Config.ARGB_8888
             )
             val inputTensor = processInputImage(detectBitmap, inputWidth, inputHeight)
+            Log.i("MoveNet", "inputTensor: ${inputWidth}x${inputHeight}")
             val outputTensor = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
+            Log.i("MoveNet", "outputTensor: ${outputShape[0]}x${outputShape[1]}x${outputShape[2]}")
             val widthRatio = detectBitmap.width.toFloat() / inputWidth
             val heightRatio = detectBitmap.height.toFloat() / inputHeight
 
@@ -117,7 +119,7 @@ class MoveNet(
                     keyPoints.add(
                         KeyPoint(
                             BodyPart.fromInt(idx),
-                            PointF(x,y),
+                            PointF(x, y),
                             score
                         )
                     )
