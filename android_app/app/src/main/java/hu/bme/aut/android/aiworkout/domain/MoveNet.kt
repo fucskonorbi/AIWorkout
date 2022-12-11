@@ -92,14 +92,12 @@ class MoveNet(
         val heightRatio = detectBitmap.height.toFloat() / inputHeight
 
         val positions = mutableListOf<Float>()
-
         inputTensor?.let { input ->
             interpreter.run(input.buffer, outputTensor.buffer.rewind())
             val output = outputTensor.floatArray
             for (idx in 0 until numKeyPoints) {
                 val x = output[idx * 3 + 1] * inputWidth * widthRatio
                 val y = output[idx * 3 + 0] * inputHeight * heightRatio
-
                 positions.add(x)
                 positions.add(y)
                 val score = output[idx * 3 + 2]
