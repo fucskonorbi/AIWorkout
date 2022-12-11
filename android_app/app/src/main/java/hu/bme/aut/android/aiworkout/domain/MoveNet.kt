@@ -81,69 +81,19 @@ class MoveNet(
         val inferenceStartTimeNanos = SystemClock.elapsedRealtimeNanos()
         var totalScore = 0f
 
-//        val width: Int = bitmap.width
-//        val height: Int = bitmap.height
-//        val pixels = IntArray(width * height)
-//        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-//        var sumRed: Long = 0
-//        var sumGreen: Long = 0
-//        var sumBlue: Long = 0
-//        for (pixel in pixels) {
-//            // Get the red, green, and blue values of the pixel
-//            val red: Int = Color.red(pixel)
-//            val green: Int = Color.green(pixel)
-//            val blue: Int = Color.blue(pixel)
-//
-//            // Add the red, green, and blue values to the sum
-//            sumRed += red.toLong()
-//            sumGreen += green.toLong()
-//            sumBlue += blue.toLong()
-//        }
-//        val meanRed = (sumRed / pixels.size).toDouble()
-//        val meanGreen = (sumGreen / pixels.size).toDouble()
-//        val meanBlue = (sumBlue / pixels.size).toDouble()
-//        Log.d("mean", "meanRed: $meanRed, meanGreen: $meanGreen, meanBlue: $meanBlue")
-
         val numKeyPoints = outputShape[2]
         val keyPoints = mutableListOf<KeyPoint>()
 
         val detectBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true);
-        val width: Int = detectBitmap.width
-        val height: Int = detectBitmap.height
-        val pixels = IntArray(width * height)
-        detectBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        var sumRed: Long = 0
-        var sumGreen: Long = 0
-        var sumBlue: Long = 0
-        for (pixel in pixels) {
-            // Get the red, green, and blue values of the pixel
-            val red: Int = Color.red(pixel)
-            val green: Int = Color.green(pixel)
-            val blue: Int = Color.blue(pixel)
 
-            // Add the red, green, and blue values to the sum
-            sumRed += red.toLong()
-            sumGreen += green.toLong()
-            sumBlue += blue.toLong()
-        }
-        val meanRed = (sumRed / pixels.size).toDouble()
-        val meanGreen = (sumGreen / pixels.size).toDouble()
-        val meanBlue = (sumBlue / pixels.size).toDouble()
-        Log.d("meandetectbitmap", "meanRed: $meanRed, meanGreen: $meanGreen, meanBlue: $meanBlue")
-        Log.d("bitmap", "format: " + detectBitmap.config + detectBitmap.colorSpace)
         val inputTensor = processInputImage(detectBitmap, inputWidth, inputHeight)
-        Log.i("MoveNet", "inputTensor: ${inputWidth}x${inputHeight}")
         val outputTensor = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
-        Log.i("MoveNet", "outputTensor: ${outputShape[0]}x${outputShape[1]}x${outputShape[2]}")
         val widthRatio = detectBitmap.width.toFloat() / inputWidth
         val heightRatio = detectBitmap.height.toFloat() / inputHeight
 
         val positions = mutableListOf<Float>()
 
         inputTensor?.let { input ->
-            Log.d("mean", "input1: ${input.tensorBuffer.floatArray[0]}")
-            Log.d("mean", "input2: ${input.tensorBuffer.floatArray[inputWidth * inputHeight / 2]}")
-            Log.d("mean", "input2: ${input.tensorBuffer.floatArray[inputWidth * inputHeight - 10]}")
             interpreter.run(input.buffer, outputTensor.buffer.rewind())
             val output = outputTensor.floatArray
             for (idx in 0 until numKeyPoints) {
@@ -176,36 +126,12 @@ class MoveNet(
                 )
         }
         lastInferenceTimeNanos = SystemClock.elapsedRealtimeNanos() - inferenceStartTimeNanos
-        Log.d("MoveNet", Person(keyPoints, totalScore / numKeyPoints).toString())
         return Person(keyPoints, totalScore / numKeyPoints)
     }
 
     private fun processInputImage(bitmap: Bitmap, inputWidth: Int, inputHeight: Int): TensorImage? {
         val width: Int = bitmap.width
         val height: Int = bitmap.height
-        val pixels = IntArray(width * height)
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        var sumRed: Long = 0
-        var sumGreen: Long = 0
-        var sumBlue: Long = 0
-        for (pixel in pixels) {
-            // Get the red, green, and blue values of the pixel
-            val red: Int = Color.red(pixel)
-            val green: Int = Color.green(pixel)
-            val blue: Int = Color.blue(pixel)
-
-            // Add the red, green, and blue values to the sum
-            sumRed += red.toLong()
-            sumGreen += green.toLong()
-            sumBlue += blue.toLong()
-        }
-        val meanRed = (sumRed / pixels.size).toDouble()
-        val meanGreen = (sumGreen / pixels.size).toDouble()
-        val meanBlue = (sumBlue / pixels.size).toDouble()
-        Log.d("mean", "meanRed: $meanRed, meanGreen: $meanGreen, meanBlue: $meanBlue")
-        Log.d("Bitmap", "pixel0: ${bitmap.getPixel(20, 20)}")
-        Log.d("Bitmap", "pixel1: ${bitmap.getPixel(width / 2, height / 2)}")
-        Log.d("Bitmap", "pixel2: ${bitmap.getPixel(width - 30, height-30)}")
         val size = if (height > width) width else height
         val imageProcessor = ImageProcessor.Builder().apply {
             add(ResizeWithCropOrPadOp(size, size))
@@ -214,46 +140,6 @@ class MoveNet(
         val tensorImage = TensorImage(DataType.UINT8)
         tensorImage.load(bitmap)
         return imageProcessor.process(tensorImage)
-    }
-
-//    private fun processInputImage(intArray: IntArray, inputWidth: Int, inputHeight: Int): TensorImage? {
-//        val width: Int = bitmap.width
-//        val height: Int = bitmap.height
-//        Log.d("Bitmap", "pixel0: ${bitmap.getPixel(20, 20)}")
-//        Log.d("Bitmap", "pixel1: ${bitmap.getPixel(width / 2, height / 2)}")
-//        Log.d("Bitmap", "pixel2: ${bitmap.getPixel(width - 30, height-30)}")
-//        val size = if (height > width) width else height
-//        val imageProcessor = ImageProcessor.Builder().apply {
-//            add(ResizeWithCropOrPadOp(size, size))
-//            add(ResizeOp(inputWidth, inputHeight, ResizeOp.ResizeMethod.BILINEAR))
-//        }.build()
-//        val tensorImage = TensorImage(DataType.UINT8)
-//        tensorImage.load(intArray)
-//        return imageProcessor.process(tensorImage)
-//    }
-
-    private fun initRectF(imageWidth: Int, imageHeight: Int): RectF {
-        val xMin: Float
-        val yMin: Float
-        val width: Float
-        val height: Float
-        if (imageWidth > imageHeight) {
-            width = 1f
-            height = imageWidth.toFloat() / imageHeight
-            xMin = 0f
-            yMin = (imageHeight / 2f - imageWidth / 2f) / imageHeight
-        } else {
-            height = 1f
-            width = imageHeight.toFloat() / imageWidth
-            yMin = 0f
-            xMin = (imageWidth / 2f - imageHeight / 2) / imageWidth
-        }
-        return RectF(
-            xMin,
-            yMin,
-            xMin + width,
-            yMin + height
-        )
     }
 
     override fun lastInferenceTimeNanos(): Long = lastInferenceTimeNanos
