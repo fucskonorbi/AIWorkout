@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import android.graphics.PointF
 import android.graphics.RectF
 import android.os.SystemClock
+import android.util.Log
 import hu.bme.aut.android.aiworkout.data.BodyPart
 import hu.bme.aut.android.aiworkout.data.Device
 import hu.bme.aut.android.aiworkout.data.KeyPoint
@@ -137,7 +138,7 @@ class MoveNet(
             }
         }
         lastInferenceTimeNanos = SystemClock.elapsedRealtimeNanos() - inferenceStartTimeNanos
-
+        Log.d("MoveNet", Person(keyPoints, totalScore / numKeyPoints).toString())
         return Person(keyPoints, totalScore / numKeyPoints)
     }
 

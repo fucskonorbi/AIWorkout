@@ -15,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import hu.bme.aut.android.aiworkout.data.AuthRepositoryImpl
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
 import hu.bme.aut.android.aiworkout.domain.*
+import hu.bme.aut.android.aiworkout.util.YuvToRgbConverter
 import javax.inject.Singleton
 
 @Module
@@ -62,5 +63,11 @@ class AppModule {
     @Singleton
     fun providePoseClassifier(@ApplicationContext appContext: Context): PoseClassifier {
         return PoseClassifier.create(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideYuvToRgbConverter(@ApplicationContext appContext: Context): YuvToRgbConverter {
+        return YuvToRgbConverter(appContext)
     }
 }

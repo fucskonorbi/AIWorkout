@@ -1,6 +1,7 @@
 package hu.bme.aut.android.aiworkout.ui.views
 
 import android.content.Context
+import android.graphics.ImageFormat
 import android.util.Size
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -100,12 +101,14 @@ fun CurrentWorkoutCameraScreen(
                         }
 
                         val imageAnalysis = ImageAnalysis.Builder()
-                            .setTargetResolution(Size(previewView.width, previewView.height))
+                            .setTargetResolution(Size(previewView.width/2, previewView.height/2))
                             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                             .setImageQueueDepth(10)
+//                            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                             .build()
                             .also {
-                                it.setAnalyzer(executor, PoseAnalyzer(CurrentWorkoutViewModel.moveNet, CurrentWorkoutViewModel.poseClassifier))
+                                it.setAnalyzer(executor, PoseAnalyzer(CurrentWorkoutViewModel.moveNet, CurrentWorkoutViewModel.poseClassifier,
+                                    CurrentWorkoutViewModel.yuvToRgbConverter))
                             }
 
                         cameraProvider.bindToLifecycle(
