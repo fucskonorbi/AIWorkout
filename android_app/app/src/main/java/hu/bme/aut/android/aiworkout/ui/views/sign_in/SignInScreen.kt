@@ -23,7 +23,7 @@ import hu.bme.aut.android.aiworkout.destinations.HomeScreenDestination
 import hu.bme.aut.android.aiworkout.destinations.SignUpScreenDestination
 import kotlinx.coroutines.launch
 
-@Destination
+@Destination(start=true)
 @Composable
 fun SignInScreen(
     navigator: DestinationsNavigator,
@@ -134,7 +134,7 @@ fun SignInScreen(
                 scope.launch {
                     if (state.value?.isSuccess?.isNotEmpty() == true) {
                         val success = state.value?.isSuccess
-//                        navigator.navigate(CurrentWorkoutCameraScreenDestination)
+                        navigator.navigate(HomeScreenDestination)
                     }
                 }
             }
@@ -143,7 +143,7 @@ fun SignInScreen(
                 scope.launch {
                     if (state.value?.isError?.isNotEmpty() == true) {
                         val error = state.value?.isError
-                        Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "$error", Toast.LENGTH_LONG).show()
                     }
                 }
             }

@@ -29,8 +29,6 @@ class CurrentWorkoutViewModel @Inject constructor(
     val poseClassifier: PoseClassifier,
     val yuvToRgbConverter: YuvToRgbConverter
 ): ViewModel() {
-    private val _currentWorkoutState = Channel<CurrentWorkoutState>()
-    val currentWorkoutState  = _currentWorkoutState.receiveAsFlow()
     val lastDetectedPose: MutableState<List<Pair<String, Float>>> = mutableStateOf(listOf())
     val lastDetectedKeypoints: MutableState<List<KeyPoint>> = mutableStateOf(listOf())
     fun updateLastDetectedPose(pose: List<Pair<String, Float>>) {

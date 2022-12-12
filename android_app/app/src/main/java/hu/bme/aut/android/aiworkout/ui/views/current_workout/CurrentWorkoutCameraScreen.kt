@@ -12,7 +12,12 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +43,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.android.aiworkout.data.BodyPart
 import hu.bme.aut.android.aiworkout.data.KeyPoint
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
+import hu.bme.aut.android.aiworkout.destinations.CurrentWorkoutDetailsScreenDestination
 import hu.bme.aut.android.aiworkout.domain.MoveNet
 import hu.bme.aut.android.aiworkout.domain.PoseClassifier
 import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
@@ -51,7 +57,7 @@ import kotlin.time.Duration.Companion.seconds
 
 
 @ExperimentalPermissionsApi
-@Destination(start=true)
+@Destination
 @Composable
 fun CurrentWorkoutInitialScreen(
     navigator: DestinationsNavigator,
@@ -152,6 +158,21 @@ fun CurrentWorkoutCameraScreen(
                 color = White
             )
         }
+        FloatingActionButton(
+            onClick = {
+                navigator.navigate(CurrentWorkoutDetailsScreenDestination)
+            },
+            backgroundColor = White,
+            modifier= Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            shape = CircleShape
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Black
+            )
+        }
+
         val bodyJoints = listOf(
             Pair(BodyPart.NOSE, BodyPart.LEFT_EYE),
             Pair(BodyPart.NOSE, BodyPart.RIGHT_EYE),

@@ -44,7 +44,6 @@ class PoseClassifier(
         }
         private fun createPoseClassifierInterpreter(): Interpreter? {
             var interpreter: Interpreter? = null
-            Log.i("PoseAnalyzer", "ADIOS! PoseClassifier Creating interpreter")
             val conditions = CustomModelDownloadConditions.Builder()
                 .requireWifi()  // Also possible: .requireCharging() and .requireDeviceIdle()
                 .build()
@@ -58,7 +57,6 @@ class PoseClassifier(
                     // The CustomModel object contains the local path of the model file,
                     // which you can use to instantiate a TensorFlow Lite interpreter.
                     val modelFile = model?.file
-                    Log.i("PoseAnalyzer", "PoseClassifier Model downloaded")
                     Log.i("PoseAnalyzer", "PoseClassifier Model path: ${modelFile?.absolutePath}")
                     if (modelFile != null) {
                         interpreter = Interpreter(modelFile)
@@ -67,7 +65,6 @@ class PoseClassifier(
                 }
                 .addOnFailureListener { exception: Exception? ->
                     exception?.printStackTrace()
-                    Log.i("PoseAnalyzer", "ADIOS! PoseClassifier Failed to download model")
                 }
             return interpreter
         }

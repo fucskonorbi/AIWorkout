@@ -135,7 +135,6 @@ fun SignUpScreen(
     LaunchedEffect(key1 = state.value?.isSuccess) {
         scope.launch {
             if (state.value?.isSuccess?.isNotEmpty() == true) {
-                val success = state.value?.isSuccess
                 navigator.navigate(SignInScreenDestination)
             }
         }
