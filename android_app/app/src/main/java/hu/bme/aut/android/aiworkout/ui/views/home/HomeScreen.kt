@@ -29,13 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import hu.bme.aut.android.aiworkout.destinations.CurrentWorkoutInitialScreenDestination
 import hu.bme.aut.android.aiworkout.destinations.WorkoutDetailsScreenDestination
+import hu.bme.aut.android.aiworkout.destinations.WorkoutsListScreenDestination
+import hu.bme.aut.android.aiworkout.presentation.workouts.WorkoutsListScreen
 import hu.bme.aut.android.aiworkout.ui.views.home.HomeScreenViewModel
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
 fun HomeScreen(
@@ -72,7 +77,7 @@ fun HomeScreen(
                 .weight(1f)
         ) {
             Button(
-                onClick = { navigator.navigate(WorkoutDetailsScreenDestination) },
+                onClick = { navigator.navigate(CurrentWorkoutInitialScreenDestination) },
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f),
@@ -131,10 +136,12 @@ fun HomeScreen(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             Button(
-                onClick = { navigator.navigate(WorkoutDetailsScreenDestination)},
+                onClick = { navigator.navigate(WorkoutsListScreenDestination)},
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f),

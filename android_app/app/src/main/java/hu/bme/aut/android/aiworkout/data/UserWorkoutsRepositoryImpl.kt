@@ -43,7 +43,7 @@ class UserWorkoutsRepositoryImpl @Inject constructor(
         return flow{
             emit(Resource.Loading())
             try {
-                workoutsReference.add(workout.datetime).await()
+                workout.datetime?.let { workoutsReference.add(it).await() }
                 emit(Resource.Success(workout))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Error"))
@@ -55,7 +55,7 @@ class UserWorkoutsRepositoryImpl @Inject constructor(
         return flow{
             emit(Resource.Loading())
             try {
-                workoutsReference.document(workout.datetime).set(workout).await()
+                workout.datetime?.let { workoutsReference.document(it).set(workout).await() }
                 emit(Resource.Success(workout))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Error"))

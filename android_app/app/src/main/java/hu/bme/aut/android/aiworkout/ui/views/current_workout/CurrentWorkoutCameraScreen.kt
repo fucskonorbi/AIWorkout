@@ -44,6 +44,7 @@ import hu.bme.aut.android.aiworkout.data.BodyPart
 import hu.bme.aut.android.aiworkout.data.KeyPoint
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
 import hu.bme.aut.android.aiworkout.destinations.CurrentWorkoutDetailsScreenDestination
+import hu.bme.aut.android.aiworkout.destinations.HomeScreenDestination
 import hu.bme.aut.android.aiworkout.domain.MoveNet
 import hu.bme.aut.android.aiworkout.domain.PoseClassifier
 import hu.bme.aut.android.aiworkout.domain.UserWorkoutsRepository
@@ -160,7 +161,7 @@ fun CurrentWorkoutCameraScreen(
         }
         FloatingActionButton(
             onClick = {
-                navigator.navigate(CurrentWorkoutDetailsScreenDestination)
+                navigator.navigate(HomeScreenDestination)
             },
             backgroundColor = White,
             modifier= Modifier.align(Alignment.BottomEnd).padding(16.dp),
@@ -220,12 +221,12 @@ fun CurrentWorkoutCameraScreen(
                         strokeWidth = 8f
                     )
                 }
-                drawLine(
-                    start = Offset(x = canvasWidth, y = 0f),
-                    end = Offset(x = 0f, y = canvasHeight),
-                    color = Red,
-                    strokeWidth = 8f
-                )
+//                drawLine(
+//                    start = Offset(x = canvasWidth, y = 0f),
+//                    end = Offset(x = 0f, y = canvasHeight),
+//                    color = Red,
+//                    strokeWidth = 8f
+//                )
             }
         }
     }
