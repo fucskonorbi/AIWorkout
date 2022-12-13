@@ -5,6 +5,7 @@ plugins {
     id 'com.google.devtools.ksp' version '1.6.10-1.0.4'
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
 android {
@@ -103,6 +104,11 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.4.3"
+
+    // Datastore
+    implementation "androidx.datastore:datastore:1.0.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
 
     // Tensorflow Lite, Firebase, and Firebase ML
     implementation platform('com.google.firebase:firebase-bom:31.0.2')

@@ -1,6 +1,8 @@
 package hu.bme.aut.android.aiworkout.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.datastore.dataStore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -15,6 +17,8 @@ import dagger.hilt.components.SingletonComponent
 import hu.bme.aut.android.aiworkout.data.AuthRepositoryImpl
 import hu.bme.aut.android.aiworkout.data.UserWorkoutsRepositoryImpl
 import hu.bme.aut.android.aiworkout.domain.*
+import hu.bme.aut.android.aiworkout.ui.views.settings.dataStore
+import hu.bme.aut.android.aiworkout.util.AppSettingsSerializer
 import hu.bme.aut.android.aiworkout.util.YuvToRgbConverter
 import javax.inject.Singleton
 
@@ -69,5 +73,11 @@ class AppModule {
     @Singleton
     fun provideYuvToRgbConverter(@ApplicationContext appContext: Context): YuvToRgbConverter {
         return YuvToRgbConverter(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext appContext: Context): SharedPreferences {
+        return appContext.getSharedPreferences("app-settings.json", Context.MODE_PRIVATE)
     }
 }

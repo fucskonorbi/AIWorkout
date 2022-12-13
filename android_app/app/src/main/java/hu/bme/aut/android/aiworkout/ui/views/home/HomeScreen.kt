@@ -33,7 +33,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.android.aiworkout.destinations.CurrentWorkoutInitialScreenDestination
-import hu.bme.aut.android.aiworkout.destinations.WorkoutDetailsScreenDestination
+import hu.bme.aut.android.aiworkout.destinations.SettingsScreenDestination
 import hu.bme.aut.android.aiworkout.destinations.WorkoutsListScreenDestination
 import hu.bme.aut.android.aiworkout.presentation.workouts.WorkoutsListScreen
 import hu.bme.aut.android.aiworkout.ui.views.home.HomeScreenViewModel
@@ -105,7 +105,7 @@ fun HomeScreen(
                 }
             }
             Button(
-                onClick = { navigator.navigate(WorkoutDetailsScreenDestination)},
+                onClick = { navigator.navigate(SettingsScreenDestination)},
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f),
