@@ -89,3 +89,5 @@ tmp/
 .idea/
 __pycache/
 __pycache__/
+tfhub_cache/
+wandb/

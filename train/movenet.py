@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,6 +28,7 @@ KEYPOINT_EDGE_INDS_TO_COLOR = {
     (14, 16): (255, 255, 0)
 }
 
+os.environ['TFHUB_CACHE_DIR'] = "./tfhub_cache"
 model = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
 print(model)
 movenet = model.signatures['serving_default']

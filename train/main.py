@@ -4,7 +4,7 @@ import tensorflow as tf
 import wandb
 from firebase_admin import credentials
 from firebase_admin import ml
-import numpy as np
+from wandb.keras import WandbMetricsLogger
 
 from utils.config import Config
 from utils.image_data import ImageDataset
@@ -12,7 +12,7 @@ from utils.models import create_model1
 
 if __name__ == "__main__":
     # load config from config.py
-    config = Config(wandb_save=False, firebase_save=False)
+    config = Config(wandb_save=True, firebase_save=False)
 
     if config.wandb_save:
         # Initialize wandb
@@ -26,9 +26,19 @@ if __name__ == "__main__":
     dataset.convert_classes_to_categorical()
     flattened_keypoints = np.array([keypoint.flatten() for keypoint in dataset.keypoints])
     model = create_model1(input_shape=(51,), num_classes=dataset.unique_classes.shape[0])
+    callbacks = []
+    if config.wandb_save:
+        callbacks.append(WandbMetricsLogger())
+    callbacks.append(tf.keras.callbacks.EarlyStopping(monitor="accuracy", patience=5, mode="max"))
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-    model.fit(flattened_keypoints, dataset.labels, epochs=50, batch_size=16)
-    model.summary()
+    history = model.fit(flattened_keypoints, dataset.labels, epochs=50, batch_size=16, callbacks=callbacks)
+
+    if config.wandb_save:
+        predictions = model.predict(flattened_keypoints)
+        predictions = np.argmax(predictions, axis=1)
+        wandb.sklearn.plot_confusion_matrix(dataset.labels, predictions, dataset.unique_classes)
+        wandb.log({"config": config.toJSON()})
+        wandb.finish()
 
     # convert model to tflite
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
