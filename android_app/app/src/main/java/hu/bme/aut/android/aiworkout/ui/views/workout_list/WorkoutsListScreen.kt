@@ -1,15 +1,17 @@
 package hu.bme.aut.android.aiworkout.presentation.workouts
 
 import android.util.Log
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,47 +36,48 @@ fun WorkoutsListScreen(
             fontSize = 30.sp,
             modifier = Modifier.padding(10.dp).align(Alignment.CenterHorizontally)
         )
-        Log.d("WorkoutsListScreen", "Workouts: ${state.workouts}")
         LazyColumn(content = {
             items(state.workouts.size) { index ->
                 Log.d("WorkoutsListScreen", "Workout: ${state.workouts[index]}")
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(1.dp, MaterialTheme.colors.onBackground)
                 ) {
-                    Column {
-                        Text(
-                            text = "Date: ${state.workouts[index].datetime}",
-                            fontSize = 20.sp,
+                    Text(
+                        text = "Workout: ${state.workouts[index].datetime}",
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.padding(10.dp),
+                        fontWeight = FontWeight.Bold,
+                    )
+                    for (exercise in state.workouts[index].exercises!!) {
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(10.dp)
-                        )
-                        Log.d("WorkoutsListScreen", "Workout: ${state.workouts[index]}")
-                        for (i in 0 until (state.workouts[index].exercises?.size ?: 0)) {
+                        ) {
                             Text(
-                                text = "Exercise: ${state.workouts[index].exercises?.get(i)?.type}",
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
+                                text = "Type: ${exercise.type}",
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.padding(10.dp),
+                                fontWeight = FontWeight.Bold,
                             )
+                            Spacer(Modifier.weight(1f))
                             Text(
-                                text = "Reps: ${state.workouts[index].exercises?.get(i)?.count}",
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
+                                text = "Reps: ${exercise.count}",
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier.padding(10.dp),
                             )
+                            Spacer(Modifier.weight(1f))
                             Text(
-                                text = "Weight: ${state.workouts[index].exercises?.get(i)?.duration}",
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
+                                text = "Duration: ${exercise.duration}",
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier.padding(10.dp)
                             )
                         }
+
                     }
                 }
             }
